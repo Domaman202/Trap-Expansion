@@ -1,38 +1,25 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
-  "version": "${version}",
-
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "id": "trapexpansion",
+  "version": "1.1.0",
+  "name": "Trap Expansion",
+  "description": "Trap Expansion Adds Some Vanilla Style Traps!",
   "authors": [
-    "Me!"
+    "Lemonszz"
+  ],
+  "contributors": [
+    "Shnupbups"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://minecraft.curseforge.com/projects/trap-expansion",
+    "sources": "https://github.com/Lemonszz/trap-expansion-fabric",
+    "issues": "https://github.com/Lemonszz/trap-expansion-fabric/issues"
   },
-
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
-
+  "license": "MIT License",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "party.lemons.trapexpansion.TrapExpansion"
     ]
-  },
-  "mixins": [
-    "modid.mixins.json"
-  ],
-
-  "depends": {
-    "fabricloader": ">=0.14.6",
-    "fabric": "*",
-    "minecraft": "~1.19",
-    "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
