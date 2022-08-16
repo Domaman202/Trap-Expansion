@@ -2,8 +2,8 @@ package party.lemons.trapexpansion.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -18,8 +18,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import party.lemons.trapexpansion.init.TrapExpansionBlocks;
 import party.lemons.trapexpansion.init.TrapExpansionSounds;
 import party.lemons.trapexpansion.misc.SpikeDamageSource;
@@ -49,17 +49,15 @@ public class SpikeTrapFloorBlock extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState var1, Direction var2, BlockState var3, WorldAccess var4, BlockPos var5, BlockPos var6) {
-        if (var1.get(WATERLOGGED)) {
-            var4.getFluidTickScheduler().schedule(var5, Fluids.WATER, Fluids.WATER.getTickRate(var4));
-        }
-
-        return super.getStateForNeighborUpdate(var1, var2, var3, var4, var5, var6);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(WATERLOGGED))
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView bv, BlockPos pos, ShapeContext ctx) {
-        return this.getCollisionShape(state, bv, pos, ctx);
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        return this.getCollisionShape(state, view, pos, context);
     }
 
     @Override
@@ -105,7 +103,7 @@ public class SpikeTrapFloorBlock extends Block {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return state.get(DIRECTION) == Direction.UP ? AABB_UP : AABB_DOWN;
     }
 
@@ -159,14 +157,14 @@ public class SpikeTrapFloorBlock extends Block {
 
         var n = state.with(OUT, endValue);
         world.setBlockState(pos, n);
-        world.scheduleBlockRerenderIfNeeded(pos, state, n);
+        world.checkBlockRerender(pos, state, n);
         if (endValue != 2 || !powered) {
             world.getBlockTickScheduler().schedule(pos, this, 5);
         }
     }
 
     protected boolean hasEntity(World worldIn, BlockPos pos, BlockState state) {
-        List<? extends Entity> list = worldIn.getEntitiesByClass(Entity.class, (new Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)).offset(pos), (e) -> true);
+        List<? extends Entity> list = worldIn.getEntities(Entity.class, (new Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)).offset(pos), (e) -> true);
         if (!list.isEmpty()) {
             for (Entity entity : list) {
                 if (!entity.canAvoidTraps()) {

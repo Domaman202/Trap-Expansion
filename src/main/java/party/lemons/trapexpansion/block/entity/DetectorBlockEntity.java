@@ -27,7 +27,7 @@ public class DetectorBlockEntity extends BlockEntity implements Tickable {
 
             Direction facing = state.get(DetectorBlock.FACING);
             Box bb = (new Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)).offset(this.pos.offset(facing)).expand(facing.getOffsetX() * 5, facing.getOffsetY() * 5, facing.getOffsetZ() * 5);
-            List<Entity> entities = this.world.getOtherEntities(null, bb, (ex) -> true);
+            List<Entity> entities = this.world.getEntities((Entity) null, bb, (ex) -> true);
             int entityCount = entities.size();
             boolean hasEntity = entityCount > 0;
             if (hasEntity) {

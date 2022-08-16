@@ -2,7 +2,7 @@ package party.lemons.trapexpansion.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Property;
@@ -25,7 +25,7 @@ public class SpikeTrapWallBlock extends SpikeTrapFloorBlock {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
         return switch (state.get(DIRECTION_WALL)) {
             case NORTH -> AABB_NORTH;
             case SOUTH -> AABB_SOUTH;

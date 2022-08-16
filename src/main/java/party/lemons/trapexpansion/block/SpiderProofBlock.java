@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
@@ -28,7 +28,7 @@ public class SpiderProofBlock extends Block {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         return VoxelShapes.cuboid(0.001, 0.001, 0.001, 0.998, 0.998, 0.998);
     }
 
@@ -37,16 +37,16 @@ public class SpiderProofBlock extends Block {
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (entity instanceof SpiderEntity) {
-            ((SpiderEntity)entity).setClimbingWall(false);
+            ((SpiderEntity)entity).setCanClimb(false);
         }
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void buildTooltip(ItemStack stack, @Nullable BlockView view, List<Text> tooltip, TooltipContext options) {
         TranslatableText text = new TranslatableText("trapexpansion.tip.spiderproof");
-        text.setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY));
+        text.setStyle(new Style().setColor(Formatting.DARK_GRAY));
         tooltip.add(text);
-        super.appendTooltip(stack, world, tooltip, options);
+        super.buildTooltip(stack, view, tooltip, options);
     }
 }
