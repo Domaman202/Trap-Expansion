@@ -20,6 +20,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.tick.OrderedTick;
 import org.jetbrains.annotations.Nullable;
 import party.lemons.trapexpansion.block.entity.FanBlockEntity;
 import party.lemons.trapexpansion.init.TrapExpansionBlockEntities;
@@ -57,10 +58,10 @@ public class FanBlock extends BlockWithEntity {
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos pos2, boolean boolean_1) {
         boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
         if (powered) {
-            world.getBlockTickScheduler().schedule(pos, this, 5);
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
             world.setBlockState(pos, state.with(POWERED, true));
         } else if (state.get(POWERED)) {
-            world.getBlockTickScheduler().schedule(pos, this, 5);
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
             world.setBlockState(pos, state.with(POWERED, false));
         }
 
@@ -69,7 +70,7 @@ public class FanBlock extends BlockWithEntity {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean bool) {
         if (world.isReceivingRedstonePower(pos)) {
-            world.getBlockTickScheduler().schedule(pos, this, 5);
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
             world.setBlockState(pos, (BlockState)state.with(POWERED, true));
         }
 

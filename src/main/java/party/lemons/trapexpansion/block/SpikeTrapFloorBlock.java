@@ -20,6 +20,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.tick.OrderedTick;
 import party.lemons.trapexpansion.init.TrapExpansionBlocks;
 import party.lemons.trapexpansion.init.TrapExpansionSounds;
 import party.lemons.trapexpansion.misc.SpikeDamageSource;
@@ -32,7 +33,7 @@ public class SpikeTrapFloorBlock extends Block {
     protected static final VoxelShape AABB_DOWN = VoxelShapes.cuboid(0.0, 0.9, 0.0, 1.0, 1.0, 1.0);
     public static final IntProperty OUT = IntProperty.of("out", 0, 2);
     public static final DirectionProperty DIRECTION = DirectionProperty.of("direction", (f) -> f.getAxis().isVertical());
-    public static final BooleanProperty WATERLOGGED;
+    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
     public SpikeTrapFloorBlock(Block.Settings settings) {
         super(settings.nonOpaque());
@@ -50,10 +51,8 @@ public class SpikeTrapFloorBlock extends Block {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState var1, Direction var2, BlockState var3, WorldAccess var4, BlockPos var5, BlockPos var6) {
-        if (var1.get(WATERLOGGED)) {
-            var4.getFluidTickScheduler().schedule(var5, Fluids.WATER, Fluids.WATER.getTickRate(var4));
-        }
-
+        if (var1.get(WATERLOGGED))
+            var4.getFluidTickScheduler().scheduleTick(new OrderedTick<>(Fluids.WATER, var5, Fluids.WATER.getTickRate(var4), var4.getTickOrder()));
         return super.getStateForNeighborUpdate(var1, var2, var3, var4, var5, var6);
     }
 
@@ -66,31 +65,26 @@ public class SpikeTrapFloorBlock extends Block {
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!world.isClient && !entity.isRemoved()) {
             int i = state.get(OUT);
-            if (i == 0) {
+            if (i == 0)
                 this.updateState(world, pos, state, i);
-            }
-
-            if (i == 2 && world.getTime() % 5L == 0L) {
+            if (i == 2 && world.getTime() % 5L == 0L)
                 entity.damage(SpikeDamageSource.SPIKE, 3.0F);
-            }
         }
-
     }
 
     /** @deprecated */
     @Deprecated
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block var4, BlockPos var5, boolean var6) {
-        world.getBlockTickScheduler().schedule(pos, this, 5);
+        world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
     }
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!world.isClient) {
             int i = state.get(OUT);
-            if (i > 0 || world.isReceivingRedstonePower(pos)) {
+            if (i > 0 || world.isReceivingRedstonePower(pos))
                 this.updateState(world, pos, state, i);
-            }
         }
     }
 
@@ -98,10 +92,8 @@ public class SpikeTrapFloorBlock extends Block {
     @Deprecated
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState state2, boolean bool) {
-        if (state.get(OUT) > 0 || world.isReceivingRedstonePower(pos)) {
-            world.getBlockTickScheduler().schedule(pos, this, 5);
-        }
-
+        if (state.get(OUT) > 0 || world.isReceivingRedstonePower(pos))
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
     }
 
     @Override
@@ -111,17 +103,13 @@ public class SpikeTrapFloorBlock extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        FluidState fs = ctx.getWorld().getFluidState(ctx.getBlockPos());
-        boolean isWater = fs.getFluid() == Fluids.WATER;
-        if (ctx.getSide() == Direction.DOWN) {
+        boolean isWater = ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER;
+        if (ctx.getSide() == Direction.DOWN)
             return this.getDefaultState().with(DIRECTION, Direction.DOWN).with(WATERLOGGED, isWater);
-        } else {
-            return switch (ctx.getSide()) {
-                case NORTH, SOUTH, WEST, EAST ->
-                        TrapExpansionBlocks.SPIKE_TRAP_WALL.getDefaultState().with(SpikeTrapWallBlock.DIRECTION_WALL, ctx.getSide()).with(WATERLOGGED, isWater);
-                default -> this.getDefaultState().with(WATERLOGGED, isWater);
-            };
-        }
+        else return switch (ctx.getSide()) {
+            case NORTH, SOUTH, WEST, EAST -> TrapExpansionBlocks.SPIKE_TRAP_WALL.getDefaultState().with(SpikeTrapWallBlock.DIRECTION_WALL, ctx.getSide()).with(WATERLOGGED, isWater);
+            default -> this.getDefaultState().with(WATERLOGGED, isWater);
+        };
     }
 
     /** @deprecated */
@@ -150,19 +138,16 @@ public class SpikeTrapFloorBlock extends Block {
         int endValue = Math.max(0, outValue + change);
         if (change != 0) {
             SoundEvent sound = TrapExpansionSounds.SOUND_SPIKE_1;
-            if (endValue == 2) {
+            if (endValue == 2)
                 sound = TrapExpansionSounds.SOUND_SPIKE_2;
-            }
-
             world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 0.5F + world.random.nextFloat() / 2.0F);
         }
 
         var n = state.with(OUT, endValue);
         world.setBlockState(pos, n);
         world.scheduleBlockRerenderIfNeeded(pos, state, n);
-        if (endValue != 2 || !powered) {
-            world.getBlockTickScheduler().schedule(pos, this, 5);
-        }
+        if (endValue != 2 || !powered)
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
     }
 
     protected boolean hasEntity(World worldIn, BlockPos pos, BlockState state) {
@@ -181,9 +166,5 @@ public class SpikeTrapFloorBlock extends Block {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> st) {
         st.add(new Property[]{OUT}).add(new Property[]{DIRECTION}).add(WATERLOGGED);
-    }
-
-    static {
-        WATERLOGGED = Properties.WATERLOGGED;
     }
 }
