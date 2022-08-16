@@ -5,6 +5,8 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -14,7 +16,10 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import party.lemons.trapexpansion.block.entity.DetectorBlockEntity;
+import party.lemons.trapexpansion.init.TrapExpansionBlockEntities;
 
 public class DetectorBlock extends BlockWithEntity {
     public static final BooleanProperty POWERED;
@@ -24,9 +29,10 @@ public class DetectorBlock extends BlockWithEntity {
         super(var1);
     }
 
+    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockView var1) {
-        return new DetectorBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new DetectorBlockEntity(pos, state);
     }
 
     @Override
@@ -57,6 +63,12 @@ public class DetectorBlock extends BlockWithEntity {
     @Override
     public BlockRenderType getRenderType(BlockState var1) {
         return BlockRenderType.MODEL;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return world.isClient ? null : DetectorBlock.checkType(type, TrapExpansionBlockEntities.DETECTOR_BE, DetectorBlockEntity::tick);
     }
 
     static {

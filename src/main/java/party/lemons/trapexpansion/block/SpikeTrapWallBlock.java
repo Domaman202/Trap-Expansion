@@ -13,10 +13,10 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class SpikeTrapWallBlock extends SpikeTrapFloorBlock {
-    protected static final VoxelShape AABB_NORTH = VoxelShapes.cuboid(0.0, 0.0, 1.0, 1.0, 1.0, 0.9);
-    protected static final VoxelShape AABB_SOUTH = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 1.0, 0.1);
-    protected static final VoxelShape AABB_WEST = VoxelShapes.cuboid(1.0, 0.0, 0.0, 0.9, 1.0, 1.0);
-    protected static final VoxelShape AABB_EAST = VoxelShapes.cuboid(0.0, 0.0, 0.0, 0.1, 1.0, 1.0);
+    protected static final VoxelShape AABB_NORTH = VoxelShapes.cuboidUnchecked(0.0, 0.0, 1.0, 1.0, 1.0, 0.9);
+    protected static final VoxelShape AABB_SOUTH = VoxelShapes.cuboidUnchecked(0.0, 0.0, 0.0, 1.0, 1.0, 0.1);
+    protected static final VoxelShape AABB_WEST = VoxelShapes.cuboidUnchecked(1.0, 0.0, 0.0, 0.9, 1.0, 1.0);
+    protected static final VoxelShape AABB_EAST = VoxelShapes.cuboidUnchecked(0.0, 0.0, 0.0, 0.1, 1.0, 1.0);
     public static final DirectionProperty DIRECTION_WALL = DirectionProperty.of("direction", (f) -> f.getAxis().isHorizontal());
 
     public SpikeTrapWallBlock(Block.Settings settings) {

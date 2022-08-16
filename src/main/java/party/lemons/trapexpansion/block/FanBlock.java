@@ -2,13 +2,14 @@ package party.lemons.trapexpansion.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -18,7 +19,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import org.jetbrains.annotations.Nullable;
 import party.lemons.trapexpansion.block.entity.FanBlockEntity;
+import party.lemons.trapexpansion.init.TrapExpansionBlockEntities;
 
 import java.util.Random;
 
@@ -81,9 +85,16 @@ public class FanBlock extends BlockWithEntity {
         st.add(new Property[]{FACING}).add(POWERED);
     }
 
+    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new FanBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new FanBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return world.isClient ? null : FanBlock.checkType(type, TrapExpansionBlockEntities.FAN_BE, FanBlockEntity::tick);
     }
 
     static {

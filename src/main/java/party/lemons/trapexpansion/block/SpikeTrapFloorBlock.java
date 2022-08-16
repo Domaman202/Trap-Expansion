@@ -64,7 +64,7 @@ public class SpikeTrapFloorBlock extends Block {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!world.isClient && !entity.removed) {
+        if (!world.isClient && !entity.isRemoved()) {
             int i = state.get(OUT);
             if (i == 0) {
                 this.updateState(world, pos, state, i);
