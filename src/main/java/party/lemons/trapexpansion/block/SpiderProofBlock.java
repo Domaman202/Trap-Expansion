@@ -9,9 +9,9 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -44,7 +44,7 @@ public class SpiderProofBlock extends Block {
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        TranslatableText text = new TranslatableText("trapexpansion.tip.spiderproof");
+        MutableText text = Text.translatable("trapexpansion.tip.spiderproof");
         text.setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY));
         tooltip.add(text);
         super.appendTooltip(stack, world, tooltip, options);

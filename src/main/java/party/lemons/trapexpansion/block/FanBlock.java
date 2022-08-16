@@ -37,7 +37,7 @@ public class FanBlock extends BlockWithEntity {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, net.minecraft.util.math.random.Random random) {
         if (state.get(POWERED) && random.nextInt(3) == 0) {
             Direction facing = state.get(FACING);
             double xPos = (float)pos.offset(facing).getX() + random.nextFloat();
@@ -45,7 +45,6 @@ public class FanBlock extends BlockWithEntity {
             double zPos = (float)pos.offset(facing).getZ() + random.nextFloat();
             world.addParticle(ParticleTypes.CLOUD, xPos, yPos, zPos, (float)facing.getOffsetX() / 2.0F, (float)facing.getOffsetY() / 2.0F, (float)facing.getOffsetZ() / 2.0F);
         }
-
     }
 
     @Override
