@@ -76,7 +76,7 @@ public class SpikeTrapFloorBlock extends Block {
     @Deprecated
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block var4, BlockPos var5, boolean var6) {
-        world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
+        world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, world.getLevelProperties().getTime() + 5, world.getTickOrder()));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class SpikeTrapFloorBlock extends Block {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState state2, boolean bool) {
         if (state.get(OUT) > 0 || world.isReceivingRedstonePower(pos))
-            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, world.getLevelProperties().getTime() + 5, world.getTickOrder()));
     }
 
     @Override
@@ -123,7 +123,7 @@ public class SpikeTrapFloorBlock extends Block {
     @Deprecated
     @Override
     public int getComparatorOutput(BlockState var1, World var2, BlockPos var3) {
-        return (Integer)var1.get(OUT);
+        return var1.get(OUT);
     }
 
     protected void updateState(World world, BlockPos pos, BlockState state, int outValue) {
@@ -147,7 +147,7 @@ public class SpikeTrapFloorBlock extends Block {
         world.setBlockState(pos, n);
         world.scheduleBlockRerenderIfNeeded(pos, state, n);
         if (endValue != 2 || !powered)
-            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, world.getLevelProperties().getTime() + 5, world.getTickOrder()));
     }
 
     protected boolean hasEntity(World worldIn, BlockPos pos, BlockState state) {

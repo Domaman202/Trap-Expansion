@@ -2,14 +2,15 @@ package party.lemons.trapexpansion.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -17,9 +18,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.tick.OrderedTick;
 import org.jetbrains.annotations.Nullable;
 import party.lemons.trapexpansion.block.entity.FanBlockEntity;
@@ -58,10 +57,10 @@ public class FanBlock extends BlockWithEntity {
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos pos2, boolean boolean_1) {
         boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
         if (powered) {
-            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, world.getLevelProperties().getTime() + 5, world.getTickOrder()));
             world.setBlockState(pos, state.with(POWERED, true));
         } else if (state.get(POWERED)) {
-            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, world.getLevelProperties().getTime() + 5, world.getTickOrder()));
             world.setBlockState(pos, state.with(POWERED, false));
         }
 
@@ -70,8 +69,8 @@ public class FanBlock extends BlockWithEntity {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean bool) {
         if (world.isReceivingRedstonePower(pos)) {
-            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, 5, world.getTickOrder()));
-            world.setBlockState(pos, (BlockState)state.with(POWERED, true));
+            world.getBlockTickScheduler().scheduleTick(new OrderedTick<>(this, pos, world.getLevelProperties().getTime() + 5, world.getTickOrder()));
+            world.setBlockState(pos, state.with(POWERED, true));
         }
 
     }
